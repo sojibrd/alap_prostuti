@@ -47,10 +47,12 @@
   --t-title-tracking: -0.01em;
   --t-title-transform: uppercase;
 
-  --t-label-family: var(--t-font-mono);
-  --t-label-size: 0.625rem;
+  /* Labels here are Bengali: wide tracking pulls conjuncts apart, and the
+     monospace face has no Bengali glyphs, so they use the reading face. */
+  --t-label-family: var(--t-font-sans);
+  --t-label-size: 0.75rem;
   --t-label-weight: 400;
-  --t-label-tracking: 0.16em;
+  --t-label-tracking: 0.02em;
   --t-label-transform: uppercase;
 
   /* --- Motion ---------------------------------------------------------- */
