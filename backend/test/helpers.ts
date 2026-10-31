@@ -62,6 +62,13 @@ export async function startTestApp(db: Db, options: { ownerGoogleSub?: string } 
     return { status: response.status, body: text ? JSON.parse(text) : null };
   }
 
+  // What navigator.sendBeacon sends: a text/plain body
+  async function postText(path: string, text: string): Promise<number> {
+    const response = await fetch(base + path, { method: "POST", headers: { "Content-Type": "text/plain" }, body: text });
+    await response.text();
+    return response.status;
+  }
+
   async function signIn(googleSub: string): Promise<string> {
     const result = await call("POST", "/auth/google", { body: { idToken: `google:${googleSub}` } });
     if (result.status !== 200) {
@@ -75,7 +82,7 @@ export async function startTestApp(db: Db, options: { ownerGoogleSub?: string } 
     server.close();
   }
 
-  return { call, signIn, close };
+  return { call, postText, signIn, close };
 }
 
 export const sampleFields = {

@@ -191,6 +191,11 @@ describe("web vitals", () => {
     expect((await t.call("POST", "/metrics/web-vitals", { body: { metric: "LCP", value: 1234.5, rating: "good" } })).status).toBe(204);
     expect((await t.call("POST", "/metrics/web-vitals", { body: { metric: "FID", value: 1, rating: "good" } })).status).toBe(400);
   });
+
+  it("accepts the text/plain body a sendBeacon sends, and rejects broken text", async () => {
+    expect(await t.postText("/metrics/web-vitals", JSON.stringify({ metric: "CLS", value: 0.02, rating: "good" }))).toBe(204);
+    expect(await t.postText("/metrics/web-vitals", "not json")).toBe(400);
+  });
 });
 
 describe("sign-in rate limit", () => {

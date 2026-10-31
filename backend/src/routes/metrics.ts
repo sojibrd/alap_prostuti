@@ -1,4 +1,4 @@
-import { Router } from "express";
+import express, { Router } from "express";
 import { rateLimit } from "express-rate-limit";
 import { z } from "zod";
 import type { MetricStore } from "../data/metrics.js";
@@ -13,6 +13,10 @@ const WebVitalBody = z.object({
   rating: z.enum(["good", "needs-improvement", "poor"]),
 });
 
+// Browsers report with navigator.sendBeacon, which can only reach another
+// origin without a CORS preflight if the body is text/plain. JSON still works.
+const beaconText = express.text({ type: "text/plain", limit: "2kb" });
+
 export function metricsRouter(deps: MetricDeps) {
   const router = Router();
 
@@ -25,8 +29,16 @@ export function metricsRouter(deps: MetricDeps) {
     message: { error: "Too many requests" },
   });
 
-  router.post("/metrics/web-vitals", metricLimit, async (req, res) => {
-    const body = WebVitalBody.safeParse(req.body);
+  router.post("/metrics/web-vitals", metricLimit, beaconText, async (req, res) => {
+    let payload: unknown = req.body;
+    if (typeof payload === "string") {
+      try {
+        payload = JSON.parse(payload);
+      } catch {
+        throw new HttpError(400, "Bad request");
+      }
+    }
+    const body = WebVitalBody.safeParse(payload);
     if (!body.success) {
       throw new HttpError(400, "Bad request");
     }

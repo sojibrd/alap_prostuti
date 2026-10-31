@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Noto_Sans_Bengali } from "next/font/google";
+import { WebVitals } from "./components/WebVitals";
 import { SITE } from "./site";
 import "./globals.css";
 
@@ -20,7 +21,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="bn" className={`${bengali.variable} h-full antialiased`}>
-      <body className="surface-app flex min-h-full flex-col">{children}</body>
+      <body className="surface-app flex min-h-full flex-col">
+        <WebVitals />
+        {children}
+      </body>
     </html>
   );
 }
