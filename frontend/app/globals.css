@@ -1,0 +1,840 @@
+@import "tailwindcss";
+
+/* ============================================================================
+   ACTIVE THEME — this is the one line to change to re-skin the whole app.
+   Every visual value lives in the imported file; nothing below it is
+   theme-specific.
+   ========================================================================= */
+@import "./themes/control-room.css";
+/* The same contract in daylight: only the palette changes, and only when the
+   phone asks for light. Remove this line for a dark-only site. */
+@import "./themes/daylight.css";
+
+/* ============================================================================
+   THEME CONTRACT
+
+   Components describe WHAT a thing is (a unit, a label, an active step) and
+   never how it looks. Everything below reads `--t-*` variables that the theme
+   file supplies. A theme may change any value here; it may never require a
+   component to change.
+
+   Division of labour:
+   - Tailwind utilities  -> layout only (flex, grid, gap, sizing, truncate)
+   - role classes below  -> every visual decision
+   ========================================================================= */
+
+@theme {
+  /* Font families are loaded once in layout.tsx and never change per theme;
+     a theme only chooses which role gets which family. */
+  --font-sans: var(--t-font-sans);
+  --font-mono: var(--t-font-mono);
+}
+
+/* --- Root -------------------------------------------------------------- */
+
+body {
+  background-color: var(--t-app-bg);
+  background-image: var(--t-app-bg-image, none);
+  background-size: var(--t-app-bg-size, auto);
+  color: var(--t-text-body);
+  font-family: var(--t-font-sans);
+  overflow-x: hidden;
+}
+
+::selection {
+  background-color: var(--t-select-bg);
+  color: var(--t-select-fg);
+}
+
+@layer components {
+  /* --- Measure: a reading column's maximum width ----------------------- */
+
+  .measure {
+    max-width: var(--t-measure);
+  }
+
+  /* --- Surfaces -------------------------------------------------------- */
+
+  .surface-app {
+    background-color: var(--t-app-bg);
+    color: var(--t-text-body);
+  }
+
+  .surface-panel {
+    background-color: var(--t-panel-bg);
+    border: var(--t-panel-border-width) solid var(--t-panel-border);
+    border-radius: var(--t-panel-radius);
+    box-shadow: var(--t-panel-shadow);
+  }
+
+  .surface-raised {
+    background-color: var(--t-raised-bg);
+    border: var(--t-raised-border-width) solid var(--t-raised-border);
+    border-radius: var(--t-raised-radius);
+    box-shadow: var(--t-raised-shadow);
+  }
+
+  .surface-well {
+    background-color: var(--t-well-bg);
+    border: var(--t-well-border-width) solid var(--t-well-border);
+    border-radius: var(--t-well-radius);
+    box-shadow: var(--t-well-shadow);
+  }
+
+  .surface-well:focus-visible,
+  .surface-well:focus-within {
+    outline: 2px solid var(--t-accent);
+    outline-offset: 1px;
+    border-color: var(--t-accent);
+  }
+
+  /* --- Text roles ------------------------------------------------------ */
+
+  .t-title {
+    color: var(--t-text-title);
+    font-family: var(--t-title-family);
+    font-weight: var(--t-title-weight);
+    letter-spacing: var(--t-title-tracking);
+    text-transform: var(--t-title-transform);
+  }
+
+  /* The engraved / annotated micro-label used all over the app. */
+  .t-label {
+    color: var(--t-text-label);
+    font-family: var(--t-label-family);
+    font-size: var(--t-label-size);
+    font-weight: var(--t-label-weight);
+    letter-spacing: var(--t-label-tracking);
+    text-transform: var(--t-label-transform);
+  }
+
+  .t-body {
+    color: var(--t-text-body);
+    line-height: 1.65;
+  }
+
+  .t-caption {
+    color: var(--t-text-muted);
+    font-size: 0.6875rem;
+    line-height: 1.5;
+  }
+
+  .t-mono {
+    color: var(--t-text-body);
+    font-family: var(--t-font-mono);
+  }
+
+  .t-strong {
+    color: var(--t-text-title);
+    font-weight: 700;
+  }
+
+  .t-accent {
+    color: var(--t-accent);
+  }
+
+  .t-muted {
+    color: var(--t-text-muted);
+  }
+
+  .t-faint {
+    color: var(--t-text-faint);
+  }
+
+  /* "Correct / succeeded" ink. A component says a thing is OK; the theme
+     decides what OK looks like. */
+  .t-ok {
+    color: var(--t-ok);
+  }
+
+  /* A set-apart voice — an analogy, a quotation. Whether that reads as
+     italics or as nothing at all is the theme's call: a CRT has no italic. */
+  .t-quote {
+    font-style: var(--t-quote-style);
+  }
+
+  /* --- Payload: a literal wire sample (JSON / SQL / HTTP) -------------- */
+
+  .payload {
+    font-family: var(--t-font-mono);
+    color: var(--t-payload-fg);
+    line-height: 1.65;
+  }
+
+  /* --- Seams ----------------------------------------------------------- */
+
+  .seam {
+    background-color: var(--t-seam);
+    height: var(--t-seam-width);
+    width: 100%;
+  }
+
+  .seam-b {
+    border-bottom: var(--t-seam-width) solid var(--t-seam);
+  }
+
+  .seam-b-heavy {
+    border-bottom: var(--t-seam-heavy-width) solid var(--t-seam-heavy);
+  }
+
+  .seam-l {
+    border-left: var(--t-seam-width) solid var(--t-seam);
+  }
+
+  .seam-t {
+    border-top: var(--t-seam-width) solid var(--t-seam);
+  }
+
+  /* --- Controls -------------------------------------------------------- */
+
+  .control {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    border-style: solid;
+    border-width: var(--t-control-border-width);
+    border-radius: var(--t-control-radius);
+    font-family: var(--t-control-family);
+    font-weight: var(--t-control-weight);
+    letter-spacing: var(--t-control-tracking);
+    text-transform: var(--t-control-transform);
+    transition: all 120ms var(--t-ease);
+    user-select: none;
+    background-color: var(--t-control-bg);
+    border-color: var(--t-control-border);
+    color: var(--t-control-fg);
+    box-shadow: var(--t-control-shadow);
+  }
+
+  .control:hover:not(:disabled) {
+    background-color: var(--t-control-bg-hover);
+    border-color: var(--t-control-border-hover);
+    color: var(--t-control-fg-hover);
+  }
+
+  .control:active:not(:disabled) {
+    transform: var(--t-control-press-transform);
+    box-shadow: var(--t-control-press-shadow);
+  }
+
+  .control:disabled {
+    opacity: var(--t-disabled-opacity);
+    pointer-events: none;
+    box-shadow: none;
+  }
+
+  /* A control with nothing to open is still a readable plate, not a greyed
+     out button — it stops offering, it does not stop informing. */
+  .control[data-static="true"]:disabled {
+    opacity: 1;
+  }
+
+  .control:focus-visible {
+    outline: 2px solid var(--t-accent);
+    outline-offset: 2px;
+  }
+
+  .control--primary {
+    background-color: var(--t-primary-bg);
+    border-color: var(--t-primary-border);
+    color: var(--t-primary-fg);
+    box-shadow: var(--t-primary-shadow);
+  }
+
+  .control--primary:hover:not(:disabled) {
+    background-color: var(--t-primary-bg-hover);
+    border-color: var(--t-primary-border);
+    color: var(--t-primary-fg);
+  }
+
+  .control--alert {
+    background-color: var(--t-alert-bg);
+    border-color: var(--t-alert-border);
+    color: var(--t-alert-fg);
+    box-shadow: var(--t-primary-shadow);
+  }
+
+  .control--alert:hover:not(:disabled) {
+    background-color: var(--t-alert-bg-hover);
+    color: var(--t-alert-fg);
+  }
+
+  .control--quiet {
+    background-color: transparent;
+    border-color: transparent;
+    color: var(--t-text-muted);
+    box-shadow: none;
+  }
+
+  .control--quiet:hover:not(:disabled) {
+    background-color: var(--t-hover-fill);
+    border-color: transparent;
+    color: var(--t-text-title);
+  }
+
+  .control--quiet:active:not(:disabled) {
+    transform: none;
+    box-shadow: none;
+  }
+
+  /* A two-cell switch (Shorten / Redirect) and the speed steps. */
+  .segment-group {
+    display: flex;
+    align-items: center;
+    border: var(--t-control-border-width) solid var(--t-control-border);
+    border-radius: var(--t-control-radius);
+    overflow: hidden;
+  }
+
+  .segment {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.375rem 0.75rem;
+    font-family: var(--t-control-family);
+    font-weight: var(--t-control-weight);
+    letter-spacing: var(--t-control-tracking);
+    text-transform: var(--t-control-transform);
+    color: var(--t-text-muted);
+    transition: all 120ms var(--t-ease);
+  }
+
+  .segment + .segment {
+    border-left: var(--t-control-border-width) solid var(--t-control-border);
+  }
+
+  .segment:hover {
+    background-color: var(--t-hover-fill);
+    color: var(--t-text-title);
+  }
+
+  .segment[aria-pressed="true"] {
+    background-color: var(--t-selected-bg);
+    color: var(--t-selected-fg);
+  }
+
+  /* --- Chips ----------------------------------------------------------- */
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.125rem 0.375rem;
+    border: var(--t-chip-border-width) solid var(--t-chip-border);
+    border-radius: var(--t-chip-radius);
+    background-color: var(--t-chip-bg);
+    color: var(--t-chip-fg);
+    font-family: var(--t-label-family);
+    font-size: var(--t-label-size);
+    letter-spacing: var(--t-label-tracking);
+    text-transform: var(--t-label-transform);
+  }
+
+  .chip--accent {
+    border-color: var(--t-chip-accent-border);
+    background-color: var(--t-chip-accent-bg);
+    color: var(--t-chip-accent-fg);
+  }
+
+  .chip--alert {
+    border-color: var(--t-alert-bg);
+    background-color: var(--t-alert-soft);
+    color: var(--t-alert-bg);
+  }
+
+  .chip--ok {
+    border-color: var(--t-ok);
+    background-color: var(--t-ok-soft);
+    color: var(--t-ok);
+  }
+
+  /* --- Callout: a labelled block of explanation ------------------------ */
+
+  .callout {
+    border: var(--t-callout-border-width) solid var(--t-callout-border);
+    border-left-width: var(--t-callout-edge-width);
+    border-left-color: var(--t-callout-edge);
+    border-radius: var(--t-callout-radius);
+    background-color: var(--t-callout-bg);
+    box-shadow: var(--t-callout-shadow);
+    padding: 0.75rem;
+  }
+
+  .callout--accent {
+    border-color: var(--t-chip-accent-border);
+    border-left-color: var(--t-accent);
+    background-color: var(--t-chip-accent-bg);
+  }
+
+  .callout--accent .t-label {
+    color: var(--t-accent);
+  }
+
+  .callout--alert {
+    border-color: var(--t-alert-bg);
+    border-left-color: var(--t-alert-bg);
+    background-color: var(--t-alert-soft);
+  }
+
+  .callout--alert .t-label {
+    color: var(--t-alert-bg);
+  }
+
+  /* --- Option: one branch of a trade-off ------------------------------- */
+
+  .option {
+    border-left: var(--t-callout-edge-width) solid var(--t-seam);
+    color: var(--t-text-muted);
+  }
+
+  .option[data-chosen="true"] {
+    border-left-color: var(--t-accent);
+    color: var(--t-text-body);
+  }
+
+  /* --- Tabs ------------------------------------------------------------ */
+
+  .tab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: var(--t-control-border-width) solid var(--t-tab-border);
+    border-radius: var(--t-control-radius);
+    background-color: var(--t-tab-bg);
+    color: var(--t-text-muted);
+    box-shadow: var(--t-tab-shadow);
+    transition: all 180ms var(--t-ease);
+  }
+
+  .tab:hover {
+    border-color: var(--t-tab-border-hover);
+    color: var(--t-text-title);
+  }
+
+  .tab[aria-selected="true"] {
+    background-color: var(--t-tab-selected-bg);
+    border-color: var(--t-tab-selected-border);
+    color: var(--t-text-title);
+    box-shadow: var(--t-tab-selected-shadow);
+  }
+
+  /* --- Progress marks -------------------------------------------------- */
+
+  .progress-mark {
+    width: var(--t-progress-width);
+    border-radius: var(--t-progress-radius);
+    background-color: var(--t-progress-todo);
+    height: var(--t-progress-todo-height);
+    transition: all 200ms var(--t-ease);
+  }
+
+  .progress-mark[data-state="done"] {
+    background-color: var(--t-progress-done);
+    height: var(--t-progress-done-height);
+  }
+
+  .progress-mark[data-state="current"] {
+    background-color: var(--t-progress-current);
+    height: var(--t-progress-current-height);
+  }
+
+  .progress-mark[data-state="current"][data-live="true"] {
+    animation: var(--t-lamp-blink-animation);
+  }
+
+  /* --- Group block: one level in the sidebar index --------------------- */
+
+  .topic-group {
+    border-bottom: var(--t-seam-width) solid var(--t-seam);
+  }
+
+  .topic-group:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  /* --- List rows (the step index) -------------------------------------- */
+
+  .row {
+    border-radius: var(--t-chip-radius);
+    color: var(--t-text-muted);
+    transition: all 150ms var(--t-ease);
+  }
+
+  .row:hover {
+    background-color: var(--t-hover-fill);
+    color: var(--t-text-title);
+  }
+
+  .row[aria-current="true"] {
+    background-color: var(--t-selected-bg);
+    color: var(--t-selected-fg);
+    font-weight: 600;
+  }
+
+  /* --- Task text: struck through once the task is done ----------------- */
+  /* Reads `data-done` off the card wrapper, so ticking the box restyles the
+     text without the component branching on class names. */
+
+  .task-text {
+    color: var(--t-text-title);
+  }
+
+  [data-done="true"] .task-text {
+    color: var(--t-text-muted);
+    text-decoration: line-through;
+    text-decoration-color: var(--t-text-faint);
+  }
+
+  /* --- Check: the task-done toggle ------------------------------------- */
+  /* Applied to a native `<input type="checkbox">`: the platform keeps the
+     semantics and keyboard behaviour, the theme takes over the paint. */
+
+  .check {
+    appearance: none;
+    -webkit-appearance: none;
+    flex: none;
+    width: var(--t-check-size);
+    height: var(--t-check-size);
+    border: var(--t-check-border-width) solid var(--t-check-border);
+    border-radius: var(--t-check-radius);
+    background-color: var(--t-check-bg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 72%;
+    box-shadow: var(--t-check-shadow);
+    cursor: pointer;
+    transition: all 150ms var(--t-ease);
+  }
+
+  .check:hover {
+    border-color: var(--t-check-border-hover);
+  }
+
+  .check:focus-visible {
+    outline: 2px solid var(--t-accent);
+    outline-offset: 2px;
+  }
+
+  .check:checked {
+    background-color: var(--t-check-on-bg);
+    border-color: var(--t-check-on-border);
+    background-image: var(--t-check-on-mark);
+    box-shadow: var(--t-check-on-shadow);
+  }
+
+  /* --- Focus ----------------------------------------------------------- */
+
+  /* Every keyboard-reachable role gets the SAME ring. Left to the browser
+     default it all but vanished on the darker themes. */
+  .tab:focus-visible,
+  .segment:focus-visible,
+  .row:focus-visible,
+  .progress-mark:focus-visible,
+  .chip:focus-visible {
+    outline: 2px solid var(--t-accent);
+    outline-offset: 2px;
+  }
+
+  /* --- Modal overlay --------------------------------------------------- */
+
+  .overlay {
+    background-color: var(--t-overlay-bg);
+    backdrop-filter: var(--t-overlay-filter, none);
+  }
+}
+
+
+/* ---------------------------------------------------------------------------
+   The mobile drawer slides in from the edge it is anchored to, so the reader
+   sees where it came from and where dismissing it sends it back.
+   ------------------------------------------------------------------------ */
+
+@keyframes slide-in-left {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+.animate-slide-in-left {
+  animation: slide-in-left 0.25s var(--t-ease) forwards;
+}
+
+/* Tap targets stay reachable on a phone. */
+@media (max-width: 1023px) {
+  button,
+  a {
+    min-height: 36px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   REDUCED MOTION
+
+   Honour the OS request globally: every highlight stays (that is what carries
+   the MEANING) and only the movement stops.
+   ------------------------------------------------------------------------ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* The travelling packet is an <animateMotion>, not a CSS animation — the
+     rules above cannot reach it, so the component drops it entirely. */
+}
+
+/* --- Scrollbars --------------------------------------------------------- */
+
+::-webkit-scrollbar {
+  width: var(--t-scrollbar-size);
+  height: var(--t-scrollbar-size);
+}
+
+::-webkit-scrollbar-track {
+  background: var(--t-scrollbar-track);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--t-scrollbar-thumb);
+  border-radius: var(--t-chip-radius);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--t-scrollbar-thumb-hover);
+}
+
+/* ---------------------------------------------------------------------------
+   DOC PROSE
+
+   The roadmap docs are long-form Markdown, rendered by react-markdown
+   straight into semantic tags. There is no component to hang a role class on
+   for each `<h2>` or `<td>`, so this is the one place the contract addresses
+   raw elements — scoped under `.doc-prose` and reading `--t-doc-*` only.
+
+   Every value below is a theme value. A theme that wants engraved headings
+   over a warm chassis and one that wants a quiet paper column both express it
+   here; no component changes either way.
+   ------------------------------------------------------------------------ */
+
+@layer components {
+  .doc-prose {
+    color: var(--t-doc-body);
+    font-family: var(--t-doc-family);
+    font-size: var(--t-doc-size);
+    line-height: var(--t-doc-leading);
+  }
+
+  .doc-prose > * + * {
+    margin-top: var(--t-doc-flow);
+  }
+
+  .doc-prose h1,
+  .doc-prose h2,
+  .doc-prose h3,
+  .doc-prose h4 {
+    color: var(--t-doc-heading);
+    font-family: var(--t-doc-heading-family);
+    font-weight: var(--t-doc-heading-weight);
+    letter-spacing: var(--t-doc-heading-tracking);
+    text-transform: var(--t-doc-heading-transform);
+    line-height: 1.3;
+    scroll-margin-top: 6rem;
+  }
+
+  .doc-prose h1 { font-size: var(--t-doc-h1-size); }
+  .doc-prose h2 { font-size: var(--t-doc-h2-size); }
+  .doc-prose h3 { font-size: var(--t-doc-h3-size); }
+  .doc-prose h4 { font-size: var(--t-doc-h4-size); }
+
+  /* A heading needs more air above it than the paragraph flow gives, and the
+     rule under an h2 is the same seam the panels use — the page is one
+     machine, not a document pasted onto one. */
+  .doc-prose > h1 + *,
+  .doc-prose > h2 + *,
+  .doc-prose > h3 + *,
+  .doc-prose > h4 + * {
+    margin-top: var(--t-doc-flow-tight);
+  }
+
+  .doc-prose > * + h1,
+  .doc-prose > * + h2,
+  .doc-prose > * + h3,
+  .doc-prose > * + h4 {
+    margin-top: var(--t-doc-heading-lead);
+  }
+
+  .doc-prose h2 {
+    padding-bottom: 0.4rem;
+    border-bottom: var(--t-seam-width) solid var(--t-seam);
+  }
+
+  .doc-prose a {
+    color: var(--t-doc-link);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: color 120ms var(--t-ease);
+  }
+
+  .doc-prose a:hover {
+    color: var(--t-doc-link-hover);
+  }
+
+  .doc-prose strong {
+    color: var(--t-doc-strong);
+    font-weight: 700;
+  }
+
+  .doc-prose em {
+    font-style: var(--t-quote-style);
+  }
+
+  .doc-prose ul,
+  .doc-prose ol {
+    padding-left: 1.4rem;
+  }
+
+  .doc-prose ul { list-style: var(--t-doc-bullet); }
+  .doc-prose ol { list-style: decimal; }
+
+  .doc-prose li + li {
+    margin-top: 0.35rem;
+  }
+
+  .doc-prose li::marker {
+    color: var(--t-doc-marker);
+  }
+
+  .doc-prose hr {
+    border: 0;
+    border-top: var(--t-seam-width) solid var(--t-seam);
+  }
+
+  /* --- Inline code and code blocks ------------------------------------ */
+
+  .doc-prose :not(pre) > code {
+    font-family: var(--t-font-mono);
+    font-size: 0.875em;
+    color: var(--t-doc-code-fg);
+    background-color: var(--t-doc-code-bg);
+    border: var(--t-chip-border-width) solid var(--t-doc-code-border);
+    border-radius: var(--t-chip-radius);
+    padding: 0.1em 0.35em;
+  }
+
+  .doc-prose pre {
+    font-family: var(--t-font-mono);
+    font-size: 0.8125rem;
+    line-height: 1.65;
+    color: var(--t-doc-pre-fg);
+    background-color: var(--t-well-bg);
+    border: var(--t-well-border-width) solid var(--t-well-border);
+    border-radius: var(--t-well-radius);
+    box-shadow: var(--t-well-shadow);
+    padding: 0.9rem 1rem;
+    overflow-x: auto;
+  }
+
+  .doc-prose pre code {
+    background: none;
+    border: 0;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+  }
+
+  /* --- Quotes ---------------------------------------------------------- */
+
+  .doc-prose blockquote {
+    border: var(--t-callout-border-width) solid var(--t-callout-border);
+    border-left-width: var(--t-callout-edge-width);
+    border-left-color: var(--t-accent);
+    border-radius: var(--t-callout-radius);
+    background-color: var(--t-callout-bg);
+    box-shadow: var(--t-callout-shadow);
+    padding: 0.75rem 1rem;
+    color: var(--t-doc-body);
+  }
+
+  .doc-prose blockquote > * + * {
+    margin-top: var(--t-doc-flow-tight);
+  }
+
+  /* --- Tables ---------------------------------------------------------- */
+
+  /* Wide comparison tables are common here; the table scrolls inside its own
+     box rather than pushing the page sideways. */
+  .doc-prose table {
+    display: block;
+    width: max-content;
+    max-width: 100%;
+    overflow-x: auto;
+    border-collapse: collapse;
+    font-size: 0.9em;
+    border: var(--t-panel-border-width) solid var(--t-panel-border);
+    border-radius: var(--t-panel-radius);
+  }
+
+  .doc-prose thead {
+    background-color: var(--t-raised-bg);
+  }
+
+  .doc-prose th {
+    color: var(--t-doc-heading);
+    font-family: var(--t-label-family);
+    font-size: var(--t-label-size);
+    font-weight: var(--t-label-weight);
+    letter-spacing: var(--t-label-tracking);
+    text-transform: var(--t-label-transform);
+    text-align: left;
+    padding: 0.55rem 0.8rem;
+    white-space: nowrap;
+  }
+
+  .doc-prose td {
+    padding: 0.55rem 0.8rem;
+    vertical-align: top;
+    border-top: var(--t-seam-width) solid var(--t-seam);
+  }
+
+  .doc-prose img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--t-panel-radius);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   GAUGE — a filled bar reporting a proportion (chapters read, section done).
+
+   Kept out of `.progress-mark`, which reports position in a sequence of steps.
+   A gauge answers "how much", a progress mark answers "where".
+   ------------------------------------------------------------------------ */
+
+@layer components {
+  .gauge {
+    background-color: var(--t-gauge-track);
+    border: var(--t-gauge-border-width) solid var(--t-gauge-border);
+    border-radius: var(--t-gauge-radius);
+    box-shadow: var(--t-well-shadow);
+    overflow: hidden;
+  }
+
+  .gauge-fill {
+    height: 100%;
+    background-color: var(--t-gauge-fill);
+    box-shadow: var(--t-gauge-fill-glow);
+    transition: width 400ms var(--t-ease);
+  }
+
+  .gauge-fill[data-tone="ok"] {
+    background-color: var(--t-ok);
+  }
+}

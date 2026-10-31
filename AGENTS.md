@@ -2,6 +2,7 @@
 
 কঠিন আলাপের আগে প্রস্তুতি লেখার app। design আর প্রতিটা সিদ্ধান্তের কারণ `DESIGN.md`-এ, শব্দের মানে `docs/context/glossary.md`-এ — কাজের আগে দুটোই পড়ুন।
 
+- **লাইভ** — backend `https://alap-prostuti-api.onrender.com` (Render, Singapore, Free; লাইভ ২০২৬-১০-৩১)। Render-এ env পাঁচটা: `NODE_VERSION`, `DATABASE_URL` (`app_user`), `GOOGLE_CLIENT_ID`, `JWT_SECRET`, `ALLOWED_ORIGIN` — মালিকের বা backup-এর চাবি সেখানে নয়।
 - **গড়ন** — `frontend/` (Next.js static export → GitHub Pages) আর `backend/` (Express + TypeScript → Render, root directory `backend/`)। API-র type থাকে `backend/`-এর ভেতরে, frontend সেখান থেকে import করে — Render `backend/`-এর বাইরের ফাইল দেখে না।
 - **ব্যবহারকারীর লেখা কখনো repo, log বা চ্যাটে নয়।** error log-এ শুধু error, request body নয়।
 - **secret শুধু env-এ** — local-এ `.env` (git-এর বাইরে), deploy-এ Render আর GitHub-এর secret। `.env.example`-এ শুধু নাম।
@@ -12,4 +13,5 @@
 - **role** — app চলে `app_user` দিয়ে, backup `backup_reader` দিয়ে, migration `neondb_owner` দিয়ে (`backend/sql/roles.sql`)। নতুন table যোগ হলে `app_user`-এর দরকারি grant ঐ ফাইলে যোগ করে ব্যবহারকারীকে চালাতে দিন — নইলে app-এ "permission denied"। `backup_reader` নতুন table নিজেই পায় (default privileges)। Console, CLI বা API দিয়ে role নয় — ওগুলো `neon_superuser` পায়।
 - **test** — `backend/`-এ `npm test` (vitest)। database PGlite (WASM-এ আসল Postgres, in-memory), repo-র `drizzle/` migration দিয়ে — Neon বা কোনো secret লাগে না। PGlite চালু হতে কয়েক সেকেন্ড, তাই প্রতি test ফাইলে database একটাই, প্রতি `describe`-এ আলাদা app আর আলাদা নামের ব্যবহারকারী। role-এর grant PGlite যাচাই করে না — ওটা Neon-এ আলাদা করে দেখা।
 - **free tier ঘুমায়** — backend ১৫ মিনিট চুপচাপে, database ৫ মিনিটে। `/health` database ছোঁয় না, যাতে Render-এর health check database জাগিয়ে না রাখে।
+- **frontend** — Next.js 16.4 static export (`basePath` `/alap_prostuti`, GitHub Pages; workflow repo-র root-এ, build শুধু `frontend/`-এ)। এই version-এ API বদলেছে — code-এর আগে `frontend/node_modules/next/dist/docs` পড়ুন। `cacheComponents`/`partialPrefetching` বন্ধ: ওগুলো server চায়। Theme Contract `system_design_local_company` থেকে কপি, ক্যানভাস বাদ; রং `themes/control-room.css` (dark) আর `themes/daylight.css` (light, শুধু palette বদলায়)। font একটাই — Noto Sans Bengali। backend-এর type আসে `import type` দিয়ে `../../../backend/src/api-types`; browser-এর API call `app/services/`-এ (`lib/` server-only থাকে)। local-এ backend চাইলে `frontend/.env.local`-এ `NEXT_PUBLIC_API_BASE=http://localhost:4000`।
 - **Skill** — backend-এ `nodejs-backend-patterns`, database-এ `supabase-postgres-best-practices` আর `neon-postgres`। frontend `nextjs-pages`-এর গড়নে, কিন্তু রং light আর dark দুটোই, ফোনের system setting অনুযায়ী।
