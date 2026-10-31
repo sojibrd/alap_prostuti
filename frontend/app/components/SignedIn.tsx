@@ -12,7 +12,12 @@ import { Button } from "./ui";
 export function SignedIn({ children }: { children: (token: string) => ReactNode }) {
   const { session, signOut } = useSession();
 
-  if (!session) {
+  // Not read from storage yet: show nothing rather than a sign-in flash
+  if (session === undefined) {
+    return <main id="main-content" className="flex flex-1" aria-busy="true" />;
+  }
+
+  if (session === null) {
     return (
       <main id="main-content" className="flex flex-1 items-center justify-center p-4">
         <SignInPanel />

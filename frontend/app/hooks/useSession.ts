@@ -4,8 +4,9 @@ import { useCallback, useSyncExternalStore } from "react";
 import type { SignInResponse } from "../../../backend/src/api-types";
 import { api } from "../services/api";
 
-// Kept in sessionStorage: it survives a reload, but closing the tab signs out,
-// which matters on a shared phone. The token itself lasts an hour.
+// Kept in localStorage: every tab shares one sign-in, and it outlives closing
+// the browser until the token's one hour runs out. On a shared phone, signing
+// out is how you end it; that signs out every open tab too.
 const KEY = "alap:session";
 
 type Session = SignInResponse;
@@ -16,7 +17,7 @@ let cache: { raw: string | null; value: Session | null } = { raw: null, value: n
 function readStored(): Session | null {
   let raw: string | null = null;
   try {
-    raw = window.sessionStorage.getItem(KEY);
+    raw = window.localStorage.getItem(KEY);
   } catch {
     // Storage blocked; behave as signed out
   }
@@ -39,8 +40,8 @@ function snapshot(): Session | null {
 
 function write(session: Session | null) {
   try {
-    if (session) window.sessionStorage.setItem(KEY, JSON.stringify(session));
-    else window.sessionStorage.removeItem(KEY);
+    if (session) window.localStorage.setItem(KEY, JSON.stringify(session));
+    else window.localStorage.removeItem(KEY);
   } catch {
     // Storage blocked; the session lives only until this render
   }
@@ -49,7 +50,15 @@ function write(session: Session | null) {
 
 function subscribe(onChange: () => void) {
   listeners.add(onChange);
-  return () => listeners.delete(onChange);
+  // Another tab signed in or out
+  const onStorage = (event: StorageEvent) => {
+    if (event.key === KEY || event.key === null) onChange();
+  };
+  window.addEventListener("storage", onStorage);
+  return () => {
+    listeners.delete(onChange);
+    window.removeEventListener("storage", onStorage);
+  };
 }
 
 // For a 401 from the API: the token expired or the account is gone
@@ -57,8 +66,13 @@ export function clearSession() {
   write(null);
 }
 
+// The static HTML is built without a browser, so before hydration the session
+// is unknown (undefined), not absent (null). Showing sign-in for "unknown"
+// made the sign-in panel flash on every page load.
+const unknownOnServer = () => undefined;
+
 export function useSession() {
-  const session = useSyncExternalStore(subscribe, snapshot, () => null);
+  const session: Session | null | undefined = useSyncExternalStore(subscribe, snapshot, unknownOnServer);
 
   const signIn = useCallback(async (credential: string) => {
     write(await api.signIn(credential));
